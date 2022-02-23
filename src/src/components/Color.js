@@ -1,0 +1,1 @@
+export const lightFerozee =  '#5cedf7'

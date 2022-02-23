@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "765606043883",
+    "project_id": "nativechat-c13ce",
+    "storage_bucket": "nativechat-c13ce.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:765606043883:android:2349ca554d9b9f35531eae",
+        "android_client_info": {
+          "package_name": "com.reactnativeboilerplate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "765606043883-bu1eskip912pgoiougoooq8nlfaa5l77.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALgacawoTBWKY5nkI7JlsoXjE2A5Ko5Ic"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "765606043883-bu1eskip912pgoiougoooq8nlfaa5l77.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
