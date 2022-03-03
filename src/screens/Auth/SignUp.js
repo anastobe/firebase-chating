@@ -20,6 +20,7 @@ import database from '@react-native-firebase/database';
 
 //redux
 import { connect, useDispatch } from 'react-redux'
+import { setSignupPageData } from "../../stores/actions/user.action.js"
 
 //icons
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -27,27 +28,34 @@ import Icon from 'react-native-vector-icons/Ionicons'
 //style
 import styles from "./Login.style.js"
 import { ScrollView } from 'react-native-gesture-handler'
-import axios from 'axios'
+// import axios from 'axios'
 
-const SignUp = ({ navigation }) => {
+const SignUp = ({ navigation, route, ...props }) => {
 
-  
+  const [name, setname] = useState("")  
   const [email, setemail] = useState("")
   const [password, setpassword] = useState("")
 
-  const [userid, setuserid] = useState("")
+  console.log("props2==>",props.data)
   
   //loader
   const [load, setload] = useState(false)
+  
+
+  const saveSignupInputData = () =>{
+    props.setSignupPageData("signupname", name)
+    props.setSignupPageData("signupemail", email)
+    props.setSignupPageData("signuppassword", password)
+  }
 
     const signUp = () => {   
       // setload(true)
       auth().createUserWithEmailAndPassword(email,password)
       .then((e) => {
         // setload(false)
+        console.log('id==>',e.user);
         console.log('signed up==>',e.user.uid);
-        setuserid(e.user.uid) 
-        AddMember()
+        AddMember(e)
         console.log('User account created & signed in!');
         // navigation.navigate("Login")
       })
@@ -67,25 +75,32 @@ const SignUp = ({ navigation }) => {
     }
 
 
-      const AddMember = () =>{
+      const AddMember = (e) =>{
 
-        const newReference = database()
+        console.log(" props.data.signup_pics==>", props.data.signup_pics)
+
+        if ( props.data.signup_pics !== "") {
+          
+          const newReference = database()
         .ref('/users')
         newReference
         .push({
-            'id': userid,
-            'name': 'Velazquez',
-            'email': email,
+          'id': e.user.uid,
+          'name': name,
+          'email': email,
+            'pics': props.data.signup_pics,
 
       }        
-        )
-        .then(() => console.log('AddMember set.'));
-  
-  
+      )
+      .then(() => console.log('AddMember set.'));
+
+    } else {
+      alert("plz fill all input field")
       }
-  
+    }
 
-
+  //f(check person) to anas
+  //ff(anas) to check person
 
 
   return (
@@ -113,6 +128,16 @@ const SignUp = ({ navigation }) => {
          <View  style={{ marginTop: 40 }} >
 
 
+         <View style={{ marginTop: 20 }} >
+           <TextInputComponent 
+            PlaceHolderHeading="   Enter Name" 
+            InputFieldIcons="create-outline"
+            PlaceHolderName="  Enter Your Name"
+            TextChange={setname}
+            value={name}
+            />
+          </View>
+
           <View style={{ marginTop: 20 }} >
            <TextInputComponent 
             PlaceHolderHeading="   Enter Email" 
@@ -133,11 +158,16 @@ const SignUp = ({ navigation }) => {
             />
           </View>
 
+          <TouchableOpacity style={{ marginTop: 20 }}  onPress={()=>{ navigation.navigate("Camera") }} >
+           <Button buttonName="Choose Image" />
+           {props.data.signup_pics? <Text style={{ alignSelf: 'flex-end', fontWeight: 'bold' }} >Image.jpg</Text> : <Text  style={{ alignSelf: 'flex-end', fontWeight: 'bold' }}>Select Image</Text>}
+         </TouchableOpacity>
+
           
 
-          <View style={{ alignItems: 'center', marginTop: 60 }} >
+          <View style={{ alignItems: 'center', marginTop: 40, marginBottom: 20 }} >
             <Text>Already Exist</Text>
-            <TouchableOpacity onPress={()=> navigation.navigate("Login") }>
+            <TouchableOpacity onPress={()=>{ navigation.navigate("Login"), saveSignupInputData() }}>
              <Text style={{ fontWeight: 'bold', marginTop: 5,  }} >Go For Login?</Text>
             </TouchableOpacity>
           </View>
@@ -157,4 +187,19 @@ const SignUp = ({ navigation }) => {
   )
 }
 
-export default (SignUp)
+
+//le k aoo
+const mapStateToProps = state => {
+  return {
+    data: state.userReducer
+  }
+
+}
+
+//for set value
+const mapDispatchToProps = {
+  setSignupPageData
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignUp) 
+

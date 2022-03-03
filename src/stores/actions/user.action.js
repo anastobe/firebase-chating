@@ -1,17 +1,5 @@
-export const setValue = (value) =>{
+export const setSignupPageData = (key, value) =>{
   return{ 
-    type: "SET_VALUE",
-    payload: value 
+    type: "SET_SIGNUP_FIELDS", key, value 
    }
  }
-
-
-export const fetchDataUser = () => async dispatch => {
-  try {
-    dispatch(fetchUserRequest())
-    const { data } = await getUser()
-    dispatch(fetchUserSuccess(data))
-  } catch (error) {
-    dispatch(fetchUserFail())
-  }
-}

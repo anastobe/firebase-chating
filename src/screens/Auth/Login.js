@@ -36,23 +36,13 @@ const Login = ({ navigation, user, ...props }) => {
 
   const [email, setemail] = useState("")
   const [password, setpassword] = useState("")
+  
 
   console.log("email==>",email)
   console.log("password==>",password)
 
   //loader
   const [load, setload] = useState(false)
-
-
-  
-  const emptyfields = () =>{
-    setemail("") 
-    setpassword("")
-  }      
-
-  const checkerror = (e) =>{
-   
-  }
 
 
   const signIn = () => { 

@@ -1,5 +1,5 @@
 import React from 'react'
-import StartPage from '../screens/Home/StartPage.screen'
+// import StartPage from '../screens/Home/StartPage.screen'
 import Login from '../screens/Auth/Login'
 import SignUp from '../screens/Auth/SignUp'
 import { NavigationContainer } from '@react-navigation/native'
@@ -8,6 +8,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import Icon from 'react-native-vector-icons/Ionicons'
 import chatscreen from '../screens/Screens/chatscreen'
 import ChatMessage from '../screens/Screens/ChatMessage'
+import Camera from '../components/Camera'
 
 const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
@@ -39,6 +40,11 @@ const MainNavigation = () => {
           component={SignUp}
         />
         <Stack.Screen
+          name="Camera"
+          options={{ headerShown: false }}
+          component={Camera}
+        />
+        <Stack.Screen
           name="ChatMessage"
           options={{ headerShown: false }}
           component={ChatMessage}
@@ -48,11 +54,11 @@ const MainNavigation = () => {
           options={{ headerShown: false }}
           component={chatscreen}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="StartPage"
           options={{ headerShown: false }}
           component={StartPage}
-        />
+        /> */}
         <Stack.Screen
           name="Login"
           options={{ headerShown: false }}

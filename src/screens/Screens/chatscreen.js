@@ -21,7 +21,8 @@ import { lightFerozee } from '../../components/Color'
 
 //redux
 import { connect, useDispatch } from 'react-redux'
-import { v5 } from 'uuid'
+import moment from 'moment'
+import Header from '../../components/Header'
 
 const chatscreen = ({token, navigation, route}) => {
 
@@ -32,6 +33,8 @@ const chatscreen = ({token, navigation, route}) => {
     //loader
     const [load, setload] = useState(false)
     const [Dataarr, setDataarr] = useState()  
+    //for login user hide
+    const [Dataarr2, setDataarr2] = useState()  
 
 
     //display data
@@ -40,30 +43,45 @@ const chatscreen = ({token, navigation, route}) => {
     }, [])
     
     const getdatabaseData = () =>{
+      setload(true)
       database()
       .ref('/users')
       .once('value')
       .then(snapshot => {
-      
-
+        setload(false)
         const vals = snapshot.val();
         
         let _records = [];
         for(var keys in vals ){
 
           _records.push({
-                ...vals[keys],
-                id: keys
-            });
-
+            ...vals[keys],
+            idd: keys
+          });
+          
         }  
         setDataarr(_records)      
       });
+      setload(false)
     }
+    
 
+    const filter = async () =>{
+      const d = await Dataarr.filter((params) => {
+        if (params.id != id) {
+          return params
+        }  
+       })
+       setDataarr2(d)
+      }
+  
+      useEffect(()=>{
+        filter()
+      },[Dataarr])
+  
 
-
-
+   
+    
 
 
 
@@ -77,18 +95,22 @@ const chatscreen = ({token, navigation, route}) => {
       {load &&
         <View style={{ position: 'absolute', flex: 1, justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.2)', zIndex: 999, top: 0, right: 0, left: 0, bottom: 0, alignItems: 'center' }}>
           <ActivityIndicator size="large" color="#000" />
-          </View>
-          }
+          </View>}
+
+
+          <Header headername="Chat app" iconname="menu-outline" />
 
         <View style={[styles.outerWrapper,{padding: 5}]}>
           <ScrollView>
             <View>
-              <Text>Anas</Text>
-             {Dataarr && Dataarr.map((v,i)=>{
+              
+              
+             {Dataarr2 && Dataarr2.map((v,i)=>{
+               console.log("map==>",v)
                return(
-                 <TouchableOpacity onPress={()=>{ navigation.navigate("ChatMessage", {id: v.id, loginId: id} )} } >
+                 <TouchableOpacity key={v.idd} onPress={()=>{ navigation.navigate("ChatMessage", {id: v.id, loginId: id, name: v.name, image: v.pics.uri } )} } >
                 <View style={{ alignItems: 'center', height: 50, justifyContent: 'center', borderColor: "#000", borderWidth: 1, marginTop: 10, backgroundColor: "#f4f4f4", flexDirection: 'row', justifyContent: 'space-between' }} >
-                  <Image style={{ width: 50, height: 50 }} source={{ uri: 'https://reactnative.dev/img/tiny_logo.png'}}/>
+                  {v?.pics && <Image style={{ width: 50, height: 50 }} source={{ uri : v?.pics.uri}}/>}
                   <Text>{v.name}</Text>
                   <Text>.</Text>
                 </View>
@@ -168,35 +190,65 @@ export default connect(mapStateToProps, mapDispatchToProps)(chatscreen)
 
 
 
-// const [Dataarr, setDataarr] = useState()  
+
+// const { id } = route.params
+
+// console.log("login id==>",id)
+
+//   //loader
+//   const [load, setload] = useState(false)
+//   const [Dataarr, setDataarr] = useState()  
+//   //for login user hide
+//   const [Dataarr2, setDataarr2] = useState()  
 
 
-// //display data
-// useEffect(() => {
-//   getdatabaseData()
-// }, [])
-
-// const getdatabaseData = () =>{
-//   database()
-//   .ref('/')
-//   .once('value')
-//   .then(snapshot => {
-//     const vals = snapshot.val();
-
-//     console.log("vals==>",vals)
+//   //display data
+//   useEffect(() => {
+//     getdatabaseData()
+//   }, [])
+  
+//   const getdatabaseData = () =>{
+//     database()
+//     .ref('/users')
+//     .once('value')
+//     .then(snapshot => {
     
-//     let _records = [];
-//     for(var keys in vals ){
 
-//       _records.push({
-//             ...vals[keys],
-//             id: keys
+//       const vals = snapshot.val();
+
+//       console.log("get==>",snapshot.val())
+      
+//       let _records = [];
+//       for(var keys in vals ){
+
+//         _records.push({
+//           ...vals[keys],
+//           idd: keys
 //         });
+        
+//       }  
+//       setDataarr(_records)      
+//     });
+//   }
+  
 
-//     }  
-//     setDataarr(_records)      
-//   });
-// }
+//   const filter = async () =>{
+//     const d = await Dataarr.filter((params) => {
+//       if (params.id != id) {
+//         return params
+//       }  
+//      })
+//      setDataarr2(d)
+//     }
+
+//     useEffect(()=>{
+//       filter()
+//     },[Dataarr])
+
+
+ 
+  
+
 
 
 

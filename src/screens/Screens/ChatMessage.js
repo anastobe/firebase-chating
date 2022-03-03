@@ -20,15 +20,20 @@ import styles from './screensStyle'
 
 //redux
 import { connect, useDispatch } from 'react-redux'
+import moment from 'moment'
+import Header from '../../components/Header'
 
 const ChatMessage = ({token,route}) => {
 
-  const{id,loginId} = route.params
+
+
+  const{id,loginId,name,image} = route.params
 
      //loader
     const [load, setload] = useState(false)
     const [message, setmessage] = useState(false)
     const [messageData, setmessageData] = useState('')
+    const [messageDataSpecific, setmessageDataSpecific] = useState()
 
     const sendMessage = () =>{
 
@@ -37,8 +42,9 @@ const ChatMessage = ({token,route}) => {
       .push({
             'senderid' : loginId,
             'recieverid' : id,
-            'name': 'asd',
+            'name': name,
             'message': message,
+            'date': new moment().format('LTS'),
 
       })
       .then(() => console.log('Data set.'));
@@ -56,44 +62,59 @@ const ChatMessage = ({token,route}) => {
     .ref('/chats/messages')
     .once('value')
     .then(snapshot => {
-    
 
       const vals = snapshot.val();
 
       
       let _records = [];
       for(var keys in vals ){
-        _records.push({
-              ...vals[keys],
-              id: keys
+        _records.unshift({
+          ...vals[keys],
+          id: keys
           });
-
-      }  
-      setmessageData(_records)      
+        }  
+        setmessageData(_records)      
     });
    }
-
-   //specific message
-
-  //  useEffect(()=>{
-  //    specificData()
-  //  },[messageData])
-
-  //  const specificData = () =>{
-  //    console.log("messageData==>",messageData) 
-
-  //   }
-
-
-
-  console.log("messageData==>",messageData)
-
+   
    console.log("loginId==>",loginId)
-
    console.log("id==>",id)
    
+  //  useEffect(() => {
 
+  //  const onChildAdd = database()
+  //  .ref('/chats/messages')
+  //  .on('child_added', snapshot => {
+  //    console.log('A new node has been added', snapshot.val());
+  //  });
 
+  //  // Stop listening for updates when no longer required
+  //  return () => database().ref('/chats').off('child_added', onChildAdd);
+  //  }, []);
+   
+
+   
+   const filter = async () =>{
+     
+     
+     let sortedobj =  messageData.sort(function(a,b){    
+       return (a.date) <  (b.date) ? false : true;
+      });
+      
+      const d = await sortedobj.filter((params) => {
+              return params
+           })
+          
+           setmessageDataSpecific(d)
+          
+        }
+        
+        useEffect(()=>{
+          filter()
+        },[messageData])
+        
+        
+  console.log("messageDataSpecific==>",messageDataSpecific)
 
 
   
@@ -108,21 +129,45 @@ const ChatMessage = ({token,route}) => {
           <ActivityIndicator size="large" color="#000" />
           </View>}
 
+          <Header headername={name} iconname="" img={image} />
+
         <View style={[styles.outerWrapper,{padding: 5}]}>
-          <ScrollView>
+        <ScrollView>
             <View>
+              
 
-               
 
-             {/* {messageData && messageData.map((value)=> {
-               console.log("map==>",value)
-             })} */}
+
+ 
+                {messageDataSpecific && messageDataSpecific.map((v,i)=>{
+
+                  console.log("v.senderid==>",v.senderid)
+                  console.log("v.recieverid==>",v.recieverid)
+                  console.log("map==>",v)
+
+                  return(
+                  ((id === v.senderid || id === v.recieverid) && (loginId === v.senderid || loginId === v.recieverid)) ?
+                  
+                 <View style={{ width: 200, height: 50, borderRadius: 10, alignItems: 'center', justifyContent: 'center', margin: 5 ,backgroundColor: "#f4f4f4", alignSelf: v.senderid == id ? 'flex-start' : 'flex-end' ,}} >
+                   <Text>{v.message}</Text>
+                   <View style={{ alignSelf: v.senderid == id ? 'flex-start' : 'flex-end' }} >
+                   <Text>{v.date}</Text>
+                   </View> 
+                 </View> 
+
+                  : null
+                  )
+
+                  // <View style={{ margin: 5, }} >
+                  //   <Text style={{ alignSelf: v.senderid == id ? 'flex-start' : 'flex-end' , textAlign: 'center' ,backgroundColor: "#f4f4f4", lineHeight: 70, width: 150, borderRadius: 10, borderColor: "#000", borderWidth: 1}} >{v.message}</Text>
+                  //   <Text>{v.date}</Text>
+                  // </View> 
+                  
+
+                })} 
 
             </View>
           </ScrollView>
-
-
-
   <View style={{ borderWidth: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} > 
     <TextInput
       placeholder="  Enter Message"
@@ -202,4 +247,83 @@ const mapDispatchToProps = {
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChatMessage)
+
+
+
+
+
+
+
+// const{id,loginId} = route.params
+
+// //loader
+// const [load, setload] = useState(false)
+// const [message, setmessage] = useState(false)
+// const [messageData, setmessageData] = useState('')
+// const [messageDataSpecific, setmessageDataSpecific] = useState()
+
+// const sendMessage = () =>{
+
+//  database()
+//  .ref('/chats/messages')
+//  .push({
+//        'senderid' : loginId,
+//        'recieverid' : id,
+//        'name': 'names',
+//        'message': message,
+//        'date': new moment().format('LTS'),
+
+//  })
+//  .then(() => console.log('Data set.'));
+
+// }
+
+
+// //show message
+// useEffect(()=>{
+// getmessages()
+// },[])
+
+// const getmessages = () => {
+// database()
+// .ref('/chats/messages')
+// .once('value')
+// .then(snapshot => {
+
+//  const vals = snapshot.val();
+
+ 
+//  let _records = [];
+//  for(var keys in vals ){
+//    _records.unshift({
+//      ...vals[keys],
+//      id: keys
+//      });
+//    }  
+//    setmessageData(_records)      
+// });
+// }
+
+// console.log("loginId==>",loginId)
+// console.log("id==>",id)
+
+// console.log("messageData=======>",messageData)
+
+// const filter = async () =>{
+// const d = await messageData.filter((params) => {
+//  // if (params.senderid == loginId && params.recieverid == id ) {
+//    return params
+//  // }  
+// })
+
+// setmessageDataSpecific(d)
+
+// }
+
+// useEffect(()=>{
+//  filter()
+// },[messageData])
+
+
+// console.log("messageDataSpecific==>",messageDataSpecific)
 
