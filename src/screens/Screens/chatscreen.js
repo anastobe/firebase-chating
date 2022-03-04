@@ -108,9 +108,9 @@ const chatscreen = ({token, navigation, route}) => {
              {Dataarr2 && Dataarr2.map((v,i)=>{
                console.log("map==>",v)
                return(
-                 <TouchableOpacity key={v.idd} onPress={()=>{ navigation.navigate("ChatMessage", {id: v.id, loginId: id, name: v.name, image: v.pics.uri } )} } >
+                 <TouchableOpacity key={v.idd} onPress={()=>{ navigation.navigate("ChatMessage", {id: v.id, loginId: id, name: v.name, image: v.pics } )} } >
                 <View style={{ alignItems: 'center', height: 50, justifyContent: 'center', borderColor: "#000", borderWidth: 1, marginTop: 10, backgroundColor: "#f4f4f4", flexDirection: 'row', justifyContent: 'space-between' }} >
-                  {v?.pics && <Image style={{ width: 50, height: 50 }} source={{ uri : v?.pics.uri}}/>}
+                  {v?.pics && <Image style={{ width: 50, height: 50 }} source={{ uri : v?.pics}}/>}
                   <Text>{v.name}</Text>
                   <Text>.</Text>
                 </View>

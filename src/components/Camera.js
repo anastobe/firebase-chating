@@ -16,15 +16,16 @@ import { setSignupPageData } from "../stores/actions/user.action.js"
 
 const Camera = ({ navigation, route, ...props }) => {
   
-  console.log("camera data==>",props.data)
   
   
   const cameraRef = useRef()
   const savedatanadNavigate = (data) =>{
+
+
     props.setSignupPageData("signup_pics",{
       uri: data.uri,
-      name: 'IMG-20220127-WA0007.jpg',
-      type: 'image/jpeg'
+      name: new Date(),
+      type: "image/jpeg",
     })
 
     navigation.navigate('SignUp')

@@ -31,9 +31,10 @@ const ChatMessage = ({token,route}) => {
 
      //loader
     const [load, setload] = useState(false)
-    const [message, setmessage] = useState(false)
+    const [message, setmessage] = useState()
     const [messageData, setmessageData] = useState('')
     const [messageDataSpecific, setmessageDataSpecific] = useState()
+
 
     const sendMessage = () =>{
 
@@ -47,7 +48,10 @@ const ChatMessage = ({token,route}) => {
             'date': new moment().format('LTS'),
 
       })
-      .then(() => console.log('Data set.'));
+      .then(() =>{
+         console.log('Data set.')
+         setmessage("")
+        });
 
     }
 
@@ -80,17 +84,18 @@ const ChatMessage = ({token,route}) => {
    console.log("loginId==>",loginId)
    console.log("id==>",id)
    
-  //  useEffect(() => {
+   useEffect(() => {
 
-  //  const onChildAdd = database()
-  //  .ref('/chats/messages')
-  //  .on('child_added', snapshot => {
-  //    console.log('A new node has been added', snapshot.val());
-  //  });
+   const onChildAdd = database()
+   .ref('/chats/messages')
+   .on('child_added', snapshot => {
+     console.log('A new node has been added', snapshot.val());
+     getmessages()
+   });
 
-  //  // Stop listening for updates when no longer required
-  //  return () => database().ref('/chats').off('child_added', onChildAdd);
-  //  }, []);
+   // Stop listening for updates when no longer required
+   return () => database().ref('/chats/messages').off('child_added', onChildAdd);
+   }, []);
    
 
    

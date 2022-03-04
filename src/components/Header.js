@@ -17,7 +17,6 @@ import { Darkblue } from '../Constraints/index'
 
 const Header = ( props ) => {
   
-  console.log("props==>",props)
 
     return (
     <View style={{ justifyContent: 'space-around', flexDirection: 'row', height: 80, backgroundColor: Darkblue, alignItems: 'center', borderBottomRightRadius: 25, borderBottomLeftRadius: 25 }} >

@@ -17,6 +17,7 @@ import Button from '../../components/Button'
 //firebase
 import auth from '@react-native-firebase/auth'
 import database from '@react-native-firebase/database';
+import storage from '@react-native-firebase/storage';
 
 //redux
 import { connect, useDispatch } from 'react-redux'
@@ -28,6 +29,7 @@ import Icon from 'react-native-vector-icons/Ionicons'
 //style
 import styles from "./Login.style.js"
 import { ScrollView } from 'react-native-gesture-handler'
+import Sendimage from '../../components/SendImage'
 // import axios from 'axios'
 
 const SignUp = ({ navigation, route, ...props }) => {
@@ -36,7 +38,6 @@ const SignUp = ({ navigation, route, ...props }) => {
   const [email, setemail] = useState("")
   const [password, setpassword] = useState("")
 
-  console.log("props2==>",props.data)
   
   //loader
   const [load, setload] = useState(false)
@@ -49,58 +50,94 @@ const SignUp = ({ navigation, route, ...props }) => {
   }
 
     const signUp = () => {   
-      // setload(true)
-      auth().createUserWithEmailAndPassword(email,password)
-      .then((e) => {
-        // setload(false)
-        console.log('id==>',e.user);
-        console.log('signed up==>',e.user.uid);
-        AddMember(e)
+      setload(true)
+      if (name !== '' && email !== '' && password !== '' &&  props.data.signup_pics !== '' ) {
+        
+        auth().createUserWithEmailAndPassword(email,password)
+        .then((ee) => {
+        setload(false)
+        Sendimage(ee)
+        
         console.log('User account created & signed in!');
         // navigation.navigate("Login")
       })
       .catch(error => {
-        // setload(false)
+        setload(false)
         if (error.code === 'auth/email-already-in-use') {
-          console.log('That email address is already in use!');
+          alert('That email address is already in use!');
         }
-    
+        
         if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
+          alert('That email address is invalid!');
         }
     
         console.error(error);
       });
+    } else {
+      setload(false)
+      alert("please fill all input Field")
+    }
+      
+    setload(false)
     
     }
 
 
-      const AddMember = (e) =>{
+      const AddMember = async (ee) =>{
+        setload(true)
+        console.log(" props.data.signup_pics==>", props.data.signup_pics.name)
+        
 
-        console.log(" props.data.signup_pics==>", props.data.signup_pics)
-
-        if ( props.data.signup_pics !== "") {
-          
           const newReference = database()
         .ref('/users')
         newReference
         .push({
-          'id': e.user.uid,
+          'id': ee.user.uid,
           'name': name,
           'email': email,
-            'pics': props.data.signup_pics,
+          'pics': await storage().ref((props.data.signup_pics.name).toString()).getDownloadURL(),
 
+            
       }        
       )
-      .then(() => console.log('AddMember set.'));
+      .then(() =>{
+        setload(false) 
+        alert("Successfully Account Created")
+        navigation.navigate("Login")
+        console.log('AddMember set.')
+        });
 
-    } else {
-      alert("plz fill all input field")
-      }
+    }
+    
+
+    const Sendimage = async (ee) => {
+      setload(true)
+      console.log("Sendimage==>", props.data.signup_pics)
+
+      storage().ref((props.data.signup_pics.name).toString()).putFile(props.data.signup_pics.uri)
+      .then((e)=>{
+        setload(false)
+        if (e.state == 'success') {
+          AddMember(ee)
+        } else {
+          alert("Something Went Wrong in Uploading Picture")
+        }
+
+
+      })
+      .catch((e)=>{
+        setload(false)
+        console.log("catch==>",e)
+      })
+    
     }
 
-  //f(check person) to anas
-  //ff(anas) to check person
+  //   async function getimg() {
+  //     const url = await storage().ref('Fri Mar 04 2022 00:48:16 GMT+0500 (Pakistan Standard Time)').getDownloadURL()
+  //     console.log("download url==>",url)
+  //     return url
+  //   }
+  // getimg()
 
 
   return (
@@ -158,11 +195,12 @@ const SignUp = ({ navigation, route, ...props }) => {
             />
           </View>
 
-          <TouchableOpacity style={{ marginTop: 20 }}  onPress={()=>{ navigation.navigate("Camera") }} >
-           <Button buttonName="Choose Image" />
-           {props.data.signup_pics? <Text style={{ alignSelf: 'flex-end', fontWeight: 'bold' }} >Image.jpg</Text> : <Text  style={{ alignSelf: 'flex-end', fontWeight: 'bold' }}>Select Image</Text>}
-         </TouchableOpacity>
+          {/* <Sendimage /> */}
 
+          <TouchableOpacity style={{ marginTop: 20,justifyContent: 'center', height: 50, alignSelf: 'flex-end', }}  onPress={()=>{ navigation.navigate("Camera") }} >
+          {props.data.signup_pics? <Text style={{  backgroundColor: "#f2aa4c", lineHeight: 50, borderRadius: 10}} > Image Selected </Text> :  <Text style={{  backgroundColor: "#f2aa4c", lineHeight: 50, borderRadius: 10}} > Choose Image </Text>}
+           {props.data.signup_pics? <Text style={{ alignSelf: 'flex-end', fontWeight: 'bold' }} >  Image.jpg</Text> : <Text  style={{ alignSelf: 'flex-end', fontWeight: 'bold' }}>Select Image</Text>}
+         </TouchableOpacity>
           
 
           <View style={{ alignItems: 'center', marginTop: 40, marginBottom: 20 }} >
@@ -179,6 +217,7 @@ const SignUp = ({ navigation, route, ...props }) => {
          </View>
         </ScrollView>
         <TouchableOpacity onPress={() =>{ signUp()}}>
+        {/* <TouchableOpacity onPress={() =>{ Sendimage()}}> */}
            <Button buttonName="Sign Up" />
          </TouchableOpacity>
         </View>
